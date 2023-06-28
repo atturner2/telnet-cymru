@@ -9,6 +9,11 @@ import (
 	"sync"
 )
 
+type User struct {
+	Username string
+	Password string
+}
+
 type Client struct {
 	conn   net.Conn
 	writer *bufio.Writer
@@ -26,14 +31,14 @@ type ChatRoom struct {
 
 var (
 	activeChatRooms = make(map[string]*ChatRoom)
-	activeUsers     = make(map[string]string)
+	activeUsers     = make(map[string]User)
 	clients         = make(map[*Client]bool)
 	mu              sync.Mutex
 )
 
 func main() {
-	defaultChatRoom := createChatRoom("default")
 	defaultUser := createUser("default", "default")
+	fmt.Print("Created default user: ", defaultUser)
 	listener, err := net.Listen("tcp", ":23")
 	if err != nil {
 		log.Fatal("Error starting server:", err)
@@ -82,4 +87,20 @@ func handleLogin(conn net.Conn) {
 
 	response := fmt.Sprintf("You have selected the login message, this is the response object\n")
 	conn.Write([]byte(response))
+}
+
+// I forgot how to use mutexes, what caught my eye is the mutex has nothing to do with
+// the actual objects it protects, the code is just written to only access the variables after it holds
+// the mutex
+func createUser(username, password string) User {
+	mu.Lock()
+	fmt.Println("creating a user with username ", username, " and password: ", password)
+	defer mu.Unlock()
+
+	user := User{
+		Username: username,
+		Password: password,
+	}
+	activeUsers[username] = user
+	return user
 }
