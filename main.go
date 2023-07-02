@@ -14,11 +14,11 @@ var (
 func main() {
 
 	loadDefaultUsers()
-	loadDefaultChatrooms()
-	defaultChatroom := createChatRoom("a")
+	//loadDefaultChatrooms(defaultChatroomFilePath)
+	//defaultChatroom := createChatRoom("a")
 	//each connection/user has it's own goroutine and each chatroom has it's own goroutine.
 	//remember clients != users != connections but they have a 1:1:1 relationship
-	go defaultChatroom.start()
+	//go defaultChatroom.start()
 
 	listener, err := net.Listen("tcp", ":23")
 	if err != nil {

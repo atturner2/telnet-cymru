@@ -1,0 +1,11 @@
+{
+  "server": {
+    "type": "tcp",
+    "address": 23
+  },
+  "filepaths": {
+    "users": "config/users.csv",
+    "chatrooms": "config/chatrooms.csv"
+  },
+  "test": "test"
+}
