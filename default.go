@@ -6,6 +6,7 @@ import (
 	"os"
 )
 
+// default loaders load all of the default users and chatrooms from the .csv files
 func loadDefaultUsers() {
 	// Open the CSV file
 	file, err := os.Open("users.csv")

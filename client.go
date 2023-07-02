@@ -21,10 +21,9 @@ type Client struct {
 	LoggedOut bool
 }
 
-//could also store the ChatRoom object on the client
+//could also store the ChatRoom object on the client?
 
 var (
-	//clients = make(map[*Client]bool)
 	mu sync.Mutex
 )
 
