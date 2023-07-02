@@ -27,8 +27,7 @@ func handleMainMenu(client *Client) {
 			fmt.Println("After the join room call")
 		case "create":
 			fmt.Fprintln(client.conn, "You have selected to create your own chat room!")
-			//handleCreateRoom(client)
-
+			handleCreateChatRoom(client)
 		case "logout":
 			client.Logout()
 			client.LoggedOut = true

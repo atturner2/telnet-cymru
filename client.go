@@ -10,17 +10,22 @@ import (
 )
 
 type Client struct {
-	conn      net.Conn
-	writer    *bufio.Writer
-	reader    *bufio.Reader
-	room      ChatRoom
+	conn   net.Conn
+	writer *bufio.Writer
+	reader *bufio.Reader
+	room   ChatRoom
+	//I tried to get away with just storing the names of the chatrooms, not the actual
+	//chatrooms, but the problem is it needs the actual chatroom to send data, unless
+	//i maintained an active list of chatrooms and just queried that for the name
 	user      User
 	LoggedOut bool
 }
 
+//could also store the ChatRoom object on the client
+
 var (
-	clients = make(map[*Client]bool)
-	mu      sync.Mutex
+	//clients = make(map[*Client]bool)
+	mu sync.Mutex
 )
 
 func NewClient(conn *net.Conn) Client {
@@ -36,11 +41,11 @@ func NewClient(conn *net.Conn) Client {
 func handleConnection(conn *net.Conn) {
 	client := NewClient(conn)
 
-	fmt.Fprintf(*conn, "You have selected the login option. Calling the login handler\n")
 	//we only need the connection because the handler will ask for the login string
 	for {
 		if handleLogin(&client) {
 			for {
+				//making sure i'm setting the username on the client object properly
 				fmt.Println("\ncalling handlemainmenu with ", client.user.Username, "\n")
 				handleMainMenu(&client)
 				fmt.Println("after main menu execution")
@@ -57,7 +62,7 @@ func handleConnection(conn *net.Conn) {
 
 func handleLoginCommand(client *Client) bool {
 	for {
-		fmt.Fprint(client.writer, "Enter username and password as prompted or 'exit' to go back to the entry menu: ")
+		fmt.Fprint(client.writer, "Enter username and password as prompted or 'exit' to go back to the entry menu: \n")
 
 		fmt.Fprint(client.writer, "Username: ")
 		client.writer.Flush()
@@ -145,6 +150,8 @@ func (c *Client) Logout() {
 }
 
 func (c Client) send(message string) {
+	//this would look cleaner to send to the log file here but would cause
+	//more race conditions, so we're doing it in the chatroom, it also produces a 1:1 relationship
 	c.writer.WriteString(message + "\n")
 	c.writer.Flush()
 }
@@ -155,55 +162,4 @@ func (c Client) Receive() (string, error) {
 		return "", err
 	}
 	return strings.TrimSpace(message), nil
-}
-
-func handleCreateUserCommand(client Client) {
-	for {
-		fmt.Fprint(client.writer, "Username: ")
-		client.writer.Flush()
-
-		username, err := client.reader.ReadString('\n')
-		if err != nil {
-			log.Println("Error reading username:", err)
-			return
-		}
-
-		username = strings.TrimSpace(username)
-		if username == "" {
-			fmt.Fprintln(client.writer, "Username cannot be empty. Please try again.")
-			client.writer.Flush()
-			continue
-		}
-
-		if userExists(username) {
-			fmt.Fprintln(client.writer, "Username already exists. Please choose a different username.")
-			client.writer.Flush()
-			continue
-		}
-
-		fmt.Fprint(client.writer, "Password: ")
-		client.writer.Flush()
-
-		password, err := client.reader.ReadString('\n')
-		if err != nil {
-			log.Println("Error reading password:", err)
-			return
-		}
-
-		password = strings.TrimSpace(password)
-		if password == "" {
-			fmt.Fprintln(client.writer, "Password cannot be empty. Please try again.")
-			client.writer.Flush()
-			continue
-		}
-
-		createUser(username, password)
-
-		fmt.Fprintf(client.writer, "Account created. Welcome, %s!\n", username)
-		client.writer.Flush()
-
-		return
-
-	}
-
 }

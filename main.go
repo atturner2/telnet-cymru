@@ -7,14 +7,14 @@ import (
 )
 
 var (
-	activeChatRooms = make(map[string]ChatRoom)
+	activeChatRooms = make(map[string]*ChatRoom)
 	activeUsers     = make(map[string]User)
 )
 
 func main() {
-	//create two default users that can talk to eachother in the default chatroom without creating anything
-	createUser("a", "a")
-	createUser("b", "b")
+
+	loadDefaultUsers()
+	loadDefaultChatrooms()
 	defaultChatroom := createChatRoom("a")
 	//each connection/user has it's own goroutine and each chatroom has it's own goroutine.
 	//remember clients != users != connections but they have a 1:1:1 relationship

@@ -3,8 +3,10 @@ package main
 import (
 	"fmt"
 	"log"
+	"os"
 	"strings"
 	"sync"
+	"time"
 )
 
 type ChatRoom struct {
@@ -20,7 +22,8 @@ type ChatRoom struct {
 func createChatRoom(roomName string) ChatRoom {
 	mu.Lock()
 	defer mu.Unlock()
-
+	//the mutex here is for when we access the activechatrooms object, it just stores
+	//pointers to all of the existing chatrooms
 	chatRoom := ChatRoom{
 		Name:          roomName,
 		Messages:      make(chan string),
@@ -31,8 +34,7 @@ func createChatRoom(roomName string) ChatRoom {
 	}
 
 	go chatRoom.start()
-
-	activeChatRooms[roomName] = chatRoom
+	activeChatRooms[roomName] = &chatRoom
 	return chatRoom
 }
 
@@ -44,8 +46,8 @@ func (cr ChatRoom) start() {
 			cr.clientsMux.Lock()
 			fmt.Println("here is the username being added: ", client.user.Username)
 			cr.clients[client.user.Username] = client
-			fmt.Println("Here are all the clients: ", clients)
-			fmt.Println("Here are all the users in the chatroom: ", clients)
+			fmt.Println("Here are all the clients: ", cr.clients)
+			fmt.Println("Here are all the users in the chatroom: ", cr.clients)
 			cr.clientsMux.Unlock()
 		case client := <-cr.LeaveChatroom:
 			fmt.Println("leaving chatroom")
@@ -53,10 +55,14 @@ func (cr ChatRoom) start() {
 			delete(cr.clients, client.user.Username)
 			cr.clientsMux.Unlock()
 		case message := <-cr.Messages:
+			//this is where we send all the messages, skip the user
+			//that sent the message, and write the message to the log files
+			//we could also do this in the send function of the users,
+			//but its better to do it here so you don't have to work to avoid duplicates
+			//and don't have to worry as much about race conditions
 			cr.clientsMux.RLock()
 			user, parsedMessage := extractMessage(message)
 			for username := range cr.clients {
-
 				fmt.Println("Sending a message to user: ", cr.clients[username])
 				client := cr.clients[username]
 				if username != user {
@@ -66,6 +72,7 @@ func (cr ChatRoom) start() {
 					fmt.Println("Skipping the user that sent the message")
 				}
 			}
+			handleWriteToLogFile(cr.Name, parsedMessage)
 			cr.clientsMux.RUnlock()
 
 		}
@@ -99,7 +106,7 @@ func handleJoinRoom(client *Client) {
 		fmt.Println("Here is the client name that SHOULD be joining: ", client.user.Username)
 		chatRoom.Join <- *client
 		//set the chatroom name on the user
-		client.room = chatRoom
+		client.room = *chatRoom
 		fmt.Fprintf(client.writer, "You have joined the chat room '%s'.\n", roomName)
 		client.writer.Flush()
 		handleChatRoomInteraction(client)
@@ -147,8 +154,70 @@ func extractMessage(originalMessage string) (username, message string) {
 	if index >= 0 {
 		username = originalMessage[:index]
 	} else {
+		//this should never happen
 		username = originalMessage
 	}
+	originalMessage = addTimeStamp(originalMessage)
 	//we want the original message returned so we can see who sent it in the chatroom
 	return username, originalMessage
+}
+
+// this is just to add the timestamp to the messages, for both the user receiving them
+// and for the log files.
+func addTimeStamp(message string) (finalMessage string) {
+	currentTime := time.Now()
+	timestamp := currentTime.Format("2006.01.02 15:04:05")
+	return fmt.Sprintf("[%s] %s", timestamp, message)
+}
+
+// note that this handles the case where the user wants to create the chatroom,
+// the chatroom from the default .csv files are just created upon startup without any user input
+func handleCreateChatRoom(client *Client) {
+	for {
+		fmt.Fprint(client.writer, "Please enter the name of the Chatroom you would like to create: ")
+		client.writer.Flush()
+
+		chatRoomName, err := client.reader.ReadString('\n')
+		if err != nil {
+			log.Println("Error reading chatroom name:", err)
+			return
+		}
+
+		chatRoomName = strings.TrimSpace(chatRoomName)
+		if chatRoomName == "" {
+			fmt.Fprintln(client.writer, "Username cannot be empty. Please try again.")
+			client.writer.Flush()
+			continue
+		}
+
+		if userExists(chatRoomName) {
+			fmt.Fprintln(client.writer, "Username already exists. Please choose a different username.")
+			client.writer.Flush()
+			continue
+		}
+
+		createChatRoom(chatRoomName)
+
+		fmt.Fprintf(client.writer, "Chatroom Created, %s!\n", chatRoomName)
+		client.writer.Flush()
+
+		return
+
+	}
+}
+
+func handleWriteToLogFile(chatRoomName, message string) {
+	fileName := chatRoomName + ".log"
+	//this will open the log file if it already exists and create it if it doesnt
+	file, err := os.OpenFile(fileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
+	if err != nil {
+		log.Fatal("Failed to create or open log file:", err)
+	}
+	defer file.Close()
+	//this is a cool convention, you just set the output of 'log' to the file instead of stdout
+	//and you can print to the file like this.
+	log.SetOutput(file)
+
+	//write the log message to the log file, remember it has already been parsed for timestamp and user
+	log.Println(message)
 }

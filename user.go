@@ -1,6 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"log"
+	"strings"
+)
 
 type User struct {
 	Username string
@@ -31,4 +35,55 @@ func userExists(username string) bool {
 	//we also dont need a mutex here because it's not ever editing the active users, just checking the list
 	_, exists := activeUsers[username]
 	return exists
+}
+
+func handleCreateUserCommand(client Client) {
+	for {
+		fmt.Fprint(client.writer, "Username: ")
+		client.writer.Flush()
+
+		username, err := client.reader.ReadString('\n')
+		if err != nil {
+			log.Println("Error reading username:", err)
+			return
+		}
+
+		username = strings.TrimSpace(username)
+		if username == "" {
+			fmt.Fprintln(client.writer, "Username cannot be empty. Please try again.")
+			client.writer.Flush()
+			continue
+		}
+
+		if userExists(username) {
+			fmt.Fprintln(client.writer, "Username already exists. Please choose a different username.")
+			client.writer.Flush()
+			continue
+		}
+
+		fmt.Fprint(client.writer, "Password: ")
+		client.writer.Flush()
+
+		password, err := client.reader.ReadString('\n')
+		if err != nil {
+			log.Println("Error reading password:", err)
+			return
+		}
+
+		password = strings.TrimSpace(password)
+		if password == "" {
+			fmt.Fprintln(client.writer, "Password cannot be empty. Please try again.")
+			client.writer.Flush()
+			continue
+		}
+
+		createUser(username, password)
+
+		fmt.Fprintf(client.writer, "Account created. Welcome, %s!\n", username)
+		client.writer.Flush()
+
+		return
+
+	}
+
 }
