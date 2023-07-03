@@ -9,13 +9,13 @@ Pull down or unzip the project. Run "Go Build" to generate the executable and th
 'telnet localhost PORT_NUMBER' where PORT_NUMBER is the "port" field in config/config.json, currently is 23. Each server you start is a single client connection that gets it's own goroutine. They all connect on the same 
 port but they each get a goroutine created for them.
 # Usage
-The server will send you prompts to log in or create a user manually. You can also create users by adding them to the config/users.csv file. The format must be username,password with no trailing spaces. Note that
-creating a user does NOT log you in as that user and currently there is no support for forgotten passwords. Once you are logged in you can either join a chatroom from a list of chatrooms or create one of your own. 
+The server will send you prompts to log in or create a user manually. You can also create users by adding them to the config/users.csv file. The format must be username,password with no trailing spaces. Note that creating a user does NOT log you in as that user and currently there is no support for forgotten passwords. Once you are logged in you can either join a chatroom from a list of chatrooms or create one of your own. 
 The precompiled list of chatrooms is located in the chatrooms.csv file and you are free to edit that file. 
 # Features
 * Users can log in and create accounts. Users can then join and create their own chatrooms for themselves and all of the other users.
 * Users in a chatroom will recieve all of the messages in the chatroom but will not see previous messages from before they joined.
 * All messages will be logged in the logs/name_of_chatroom.csv file. Note the logs are attached to the chatroom, NOT the user.
+* Users can log in and out of their accounts and chatrooms as much as they want, a single connection only has one user at a time but can cycle through as many users as you want.
 # How It Works
 * Upon startup, the program will call getDefaults which will grab all of the default config. It will then call the default functions to load users and load chatrooms that are in the CSV files.
 * The server then listens for connections and each connection will get it's own goroutine. That goroutine will create a Client object for it's connection. Those have a 1:1 relationship and will stay together for the entire execution.
@@ -29,6 +29,7 @@ could and should have been better managed.
 instead of the way I did it where the chatroom stores all of it's clients. This is just a waste of memory in my opinion. Overall the relationship of connections:clients:users is not managed very well and should be refactored.
 * The login functionality doesn't throw a specific error if you type a username that doesnt exist vs. an existing username with a wrong password
 * There is a list of active users and each user is storing it's own login status in that list, but the clients are also tracking login status (Look at Logout() and handleLoginCommand functions in client.go, as well as userIsAlreadyLoggedIn in user.go
-* This is a hacky patch to the "logging into the same user twice" issue that I basically realized had a bug at the last minute and threw it together. Overall I should have set up all of the user log in and log out before even touching the chatroom functionality. 
+* This is a hacky patch to the "logging into the same user twice" issue that I basically realized had a bug at the last minute and threw it together. Overall I should have set up all of the user log in and log out before even touching the chatroom functionality.
+  
 
 
