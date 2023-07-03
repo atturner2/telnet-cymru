@@ -30,6 +30,15 @@ instead of the way I did it where the chatroom stores all of it's clients. This 
 * The login functionality doesn't throw a specific error if you type a username that doesnt exist vs. an existing username with a wrong password
 * There is a list of active users and each user is storing it's own login status in that list, but the clients are also tracking login status (Look at Logout() and handleLoginCommand functions in client.go, as well as userIsAlreadyLoggedIn in user.go
 * This is a hacky patch to the "logging into the same user twice" issue that I basically realized had a bug at the last minute and threw it together. Overall I should have set up all of the user log in and log out before even touching the chatroom functionality.
+# Required
+* Clients interact with service via CLI telnet
+* Support multiple connected clients
+* Messages are send to all connected clients -> I assumed if I implemented multiple chatrooms it should not send messages to users outside of the chatroom, which seemed to fit the Optional Features requirement. 
+* Messages are written to log file
+* Basic config stored in config gile
+# Optional Features
+* Allow users to join channels (I called them 'chatrooms')
+I decided at the beginning to definitely do this feature and get that all working before I added more. Unfortunately it took a little more work than I thought. I would have liked to add more, including the help functionality and ignore but ran myself out of time. help would have been easy to add, ignore would have taken some work/design decisions. 
   
 
 
