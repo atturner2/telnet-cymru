@@ -29,6 +29,6 @@ could and should have been better managed.
 instead of the way I did it where the chatroom stores all of it's clients. This is just a waste of memory in my opinion. Overall the relationship of connections:clients:users is not managed very well and should be refactored.
 * The login functionality doesn't throw a specific error if you type a username that doesnt exist vs. an existing username with a wrong password
 * There is a list of active users and each user is storing it's own login status in that list, but the clients are also tracking login status (Look at Logout() and handleLoginCommand functions in client.go, as well as userIsAlreadyLoggedIn in user.go
-  this is a hacky approach that I basically realized had a bug at the last minute and threw it together. Overall I should have set up all of the user log in and log out before even touching the chatroom functionality. 
+* This is a hacky patch to the "logging into the same user twice" issue that I basically realized had a bug at the last minute and threw it together. Overall I should have set up all of the user log in and log out before even touching the chatroom functionality. 
 
 
