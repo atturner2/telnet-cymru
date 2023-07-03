@@ -12,6 +12,7 @@ type User struct {
 }
 
 func createUser(username, password string) User {
+	//we do need a mutex here because we are editing the activeUsers object
 	mu.Lock()
 	fmt.Println("creating a user with username ", username, " and password: ", password)
 	defer mu.Unlock()

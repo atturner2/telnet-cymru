@@ -41,6 +41,8 @@ func createChatRoom(roomName string) ChatRoom {
 func (cr ChatRoom) start() {
 	for {
 		select {
+		//I used amutex here but I'm notreally sure how necessary it is
+		//becuase there is only one goroutine for the chatroom
 		case client := <-cr.Join:
 			fmt.Println("joining chatroom")
 			cr.clientsMux.Lock()

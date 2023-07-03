@@ -39,11 +39,11 @@ func NewClient(conn *net.Conn) Client {
 
 func handleConnection(conn *net.Conn) {
 	client := NewClient(conn)
-
 	//we only need the connection because the handler will ask for the login string
 	for {
 		if handleLogin(&client) {
 			for {
+				//once you reach here you are logged in
 				//making sure i'm setting the username on the client object properly
 				fmt.Println("\ncalling handlemainmenu with ", client.user.Username, "\n")
 				handleMainMenu(&client)
@@ -62,7 +62,6 @@ func handleConnection(conn *net.Conn) {
 func handleLoginCommand(client *Client) bool {
 	for {
 		fmt.Fprint(client.writer, "Enter username and password as prompted or 'exit' to go back to the entry menu: \n")
-
 		fmt.Fprint(client.writer, "Username: ")
 		client.writer.Flush()
 
@@ -101,6 +100,8 @@ func handleLoginCommand(client *Client) bool {
 	return false
 }
 
+// this has to return true or false to see if you logged in sucessfully or not
+// without that funcitonality the user can't back out of login if they meant to create an account
 func handleLogin(client *Client) bool {
 	for {
 		// Process the message or perform any desired logic here

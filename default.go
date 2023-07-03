@@ -18,7 +18,7 @@ type Config struct {
 }
 
 // default loaders load all of the default users and chatrooms from the .csv files
-// its easier to call it with the path so we only access the yaml file once from main
+// its easier to call it with the path so we only access the json file once from main
 func loadDefaultUsers(path string) {
 	// Open the CSV file
 	file, err := os.Open(path)
@@ -49,7 +49,7 @@ func loadDefaultUsers(path string) {
 	}
 }
 
-// same thing here, easier to only access the yaml file once
+// same thing here, easier to only access the json file once
 func loadDefaultChatrooms(path string) {
 	file, err := os.Open(path)
 	if err != nil {
@@ -72,6 +72,7 @@ func loadDefaultChatrooms(path string) {
 		if len(row) == 1 {
 			chatroomName := row[0]
 			chatroom := createChatRoom(chatroomName)
+			//we start the chatroom/create it's goroutine here
 			go chatroom.start()
 		}
 

@@ -13,12 +13,11 @@ var (
 
 func main() {
 
-	defaultConfig := getDefaults()
-	loadDefaultUsers(defaultConfig.Users)
-	loadDefaultChatrooms(defaultConfig.Chatrooms)
+	defaultConfig := getDefaults()                //getdefualts returns the path to the files of default users
+	loadDefaultUsers(defaultConfig.Users)         //loads all the users in the csv file
+	loadDefaultChatrooms(defaultConfig.Chatrooms) //loads all the chatrooms in the csv file
 	//each connection/user has it's own goroutine and each chatroom has it's own goroutine.
 	//remember clients != users != connections but they have a 1:1:1 relationship
-	//go defaultChatroom.start()
 
 	listener, err := net.Listen(defaultConfig.ConnectionType, defaultConfig.Port)
 	if err != nil {
@@ -34,7 +33,7 @@ func main() {
 			log.Println("Error accepting connection:", err)
 			continue
 		}
-		//every user that logs in gets their own goroutine
+		//every connection gets it's own goroutine
 		go handleConnection(&conn)
 	}
 }
