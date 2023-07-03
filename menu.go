@@ -8,7 +8,7 @@ import (
 
 func handleMainMenu(client *Client) {
 	for {
-		fmt.Println("At the main menu with user: ", client.user.Username)
+		//fmt.Println("At the main menu with user: ", client.user.Username)
 		fmt.Fprint(client.writer, "Please select 'join' to join a chatroom, 'create' to create one, or 'logout to log out.' : ")
 		client.writer.Flush()
 
@@ -22,7 +22,7 @@ func handleMainMenu(client *Client) {
 		switch command {
 		case "join":
 			fmt.Fprintln(client.conn, "You have selected to join a chat room!")
-			fmt.Println("CLIENT JOINING ROOM: ", client.user.Username)
+			//fmt.Println("CLIENT JOINING ROOM: ", client.user.Username)
 			handleJoinRoom(client)
 			fmt.Println("After the join room call")
 		case "create":

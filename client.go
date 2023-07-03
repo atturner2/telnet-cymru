@@ -45,10 +45,10 @@ func handleConnection(conn *net.Conn) {
 			for {
 				//once you reach here you are logged in
 				//making sure i'm setting the username on the client object properly
-				fmt.Println("\ncalling handlemainmenu with ", client.user.Username, "\n")
+				//fmt.Println("\ncalling handlemainmenu with ", client.user.Username, "\n")
 				handleMainMenu(&client)
-				fmt.Println("after main menu execution")
-				fmt.Println("Here is the client LoggedOut:", client.LoggedOut)
+				//fmt.Println("after main menu execution")
+				//fmt.Println("Here is the client LoggedOut:", client.LoggedOut)
 				if client.LoggedOut {
 					fmt.Println("Client logged out")
 					break // Exit the loop if the client chooses to log out
@@ -72,7 +72,8 @@ func handleLoginCommand(client *Client) bool {
 		}
 
 		if err != nil {
-			log.Println("Error reading username:", err)
+			fmt.Fprint(client.writer, "error reading username: ", err)
+
 			return false
 		}
 		fmt.Fprintf(client.conn, "You have entered a user with username %s\n", username)
@@ -117,7 +118,7 @@ func handleLogin(client *Client) bool {
 
 		command, err := client.reader.ReadString('\n')
 		if err != nil {
-			log.Println("Error reading input:", err)
+			fmt.Println("Error reading input:", err)
 			return false
 		}
 		command = strings.TrimSpace(command)
