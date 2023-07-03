@@ -43,11 +43,11 @@ I decided at the beginning to definitely do this feature and get that all workin
 # Third Party Code/documentation resources
 * The code in this project is my own but I looked at alot of different examples to figure out how to do it. Some of those examples can be seen below but it is not an exhaustive list. Alot of documentation was looked at.
 * 
-https://golangdocs.com/golang-read-json-file
-https://stackoverflow.com/questions/36417199/how-to-broadcast-message-using-channel
-https://go.dev/tour/concurrency/2
-https://www.geeksforgeeks.org/fmt-fprintf-function-in-golang-with-examples/
-https://nqbao.medium.com/writing-a-chat-server-in-go-3b61ccc2a8ed
-https://gobyexample.com/mutexes
+* https://golangdocs.com/golang-read-json-file
+* https://stackoverflow.com/questions/36417199/how-to-broadcast-message-using-channel
+* https://go.dev/tour/concurrency/2
+* https://www.geeksforgeeks.org/fmt-fprintf-function-in-golang-with-examples/
+* https://nqbao.medium.com/writing-a-chat-server-in-go-3b61ccc2a8ed
+* https://gobyexample.com/mutexes
 
 
