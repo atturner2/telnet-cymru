@@ -109,7 +109,7 @@ func handleJoinRoom(client *Client) {
 		chatRoom.Join <- *client
 		//set the chatroom name on the user
 		client.room = *chatRoom
-		fmt.Fprintf(client.writer, "You have joined the chat room '%s'.\n", roomName)
+		fmt.Fprintf(client.writer, "You have joined the chat room '%s'.\n Press enter to send messages or 'exit' to leave the chatroom\n", roomName)
 		client.writer.Flush()
 		handleChatRoomInteraction(client)
 
