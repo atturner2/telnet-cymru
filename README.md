@@ -22,7 +22,8 @@ The precompiled list of chatrooms is located in the chatrooms.csv file and you a
 * The login/create client for loop structure can be found in client.go, basically you can either create a user or log in as an existing one, but there is no support beyond that. Note that because of the create
 functionality you can have the users.csv and chatrooms.csv files empty and it will work fine, you just have to create a user.
 * You can log in and out of a chatroom or an account or multiple chatrooms and multiple accounts as many times as you want. This is why I had to have Users seperate from Clients, though like I said above that relationship
-could and should have been better managed. 
+could and should have been better managed.
+* Chatrooms have channels for communication among the users in the chatroom. The channel communicates with the user sending the message and then sends the message to all of the users in the chatroom. Remember each user has their own goroutine and each chatroom has its own goroutine. 
 # Challenges/limitations/future Improvements (Why this is a bad design)
 * In 20/20 hindsight I should have just reached out to Ryan right away and asked if he had Docker set up and just written a set of instructions with this project to run some databases in a Docker container so this could actually have real authentication and not just be running everything in memory. This is honestly a terrible design because there is no database and alot of the challenge of the project came from that more than anything else, all of the users and clients etc are stored in various objects/pointers which made this harder and more fragile than necessary. In reality this all could have been done by storing objects and memory addresses in a database and just using mutexes to regulate access.  This also would have eliminated the need for all the .CSV files because the defaults could have been stored in a database. 
 * There is no reason for the chatroom objects to be storing all of the clients, I should have just had it store the names of the clients and look them up a the communal struct of pointers of active clients (Note clients != users)
@@ -38,7 +39,15 @@ instead of the way I did it where the chatroom stores all of it's clients. This 
 * Basic config stored in config gile
 # Optional Features
 * Allow users to join channels (I called them 'chatrooms')
-I decided at the beginning to definitely do this feature and get that all working before I added more. Unfortunately it took a little more work than I thought. I would have liked to add more, including the help functionality and ignore but ran myself out of time. help would have been easy to add, ignore would have taken some work/design decisions. 
-  
+I decided at the beginning to definitely do this feature and get that all working before I added more. Unfortunately it took a little more work than I thought. I would have liked to add more, including the help functionality and ignore but ran myself out of time. help would have been easy to add, ignore would have taken some work/design decisions.
+# Third Party Code/documentation resources
+* The code in this project is my own but I looked at alot of different examples to figure out how to do it. Some of those examples can be seen below but it is not an exhaustive list. Alot of documentation was looked at.
+* 
+https://golangdocs.com/golang-read-json-file
+https://stackoverflow.com/questions/36417199/how-to-broadcast-message-using-channel
+https://go.dev/tour/concurrency/2
+https://www.geeksforgeeks.org/fmt-fprintf-function-in-golang-with-examples/
+https://nqbao.medium.com/writing-a-chat-server-in-go-3b61ccc2a8ed
+https://gobyexample.com/mutexes
 
 
