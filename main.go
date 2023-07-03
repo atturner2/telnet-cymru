@@ -8,7 +8,7 @@ import (
 
 var (
 	activeChatRooms = make(map[string]*ChatRoom)
-	activeUsers     = make(map[string]User)
+	activeUsers     = make(map[string]*User)
 )
 
 func main() {

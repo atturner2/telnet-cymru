@@ -7,29 +7,35 @@ import (
 )
 
 type User struct {
-	Username string
-	Password string
+	Username   string
+	Password   string
+	isLoggedIn bool
 }
 
-func createUser(username, password string) User {
+func createUser(username, password string) *User {
 	//we do need a mutex here because we are editing the activeUsers object
 	mu.Lock()
 	fmt.Println("creating a user with username ", username, " and password: ", password)
 	defer mu.Unlock()
 
 	user := User{
-		Username: username,
-		Password: password,
+		Username:   username,
+		Password:   password,
+		isLoggedIn: false,
 	}
-	activeUsers[username] = user
+	activeUsers[username] = &user
 	fmt.Println("Here are all the active users: ", activeUsers)
-	return user
+	return &user
 }
 
 func authenticateUser(username, password string) bool {
 	//we dont need a mutex here because it's not ever editing the active users, just checking the list
 	user, exists := activeUsers[username]
 	return exists && user.Password == password
+}
+
+func userIsAlreadyLoggedIn(username string) bool {
+	return activeUsers[username].isLoggedIn
 }
 
 func userExists(username string) bool {

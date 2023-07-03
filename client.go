@@ -91,8 +91,15 @@ func handleLoginCommand(client *Client) bool {
 			client.writer.Flush()
 			continue
 		}
+		if userIsAlreadyLoggedIn(username) {
+			fmt.Fprintln(client.writer, "User is already logged in on another client. Please try again.")
+			client.writer.Flush()
+			continue
+		}
 		client.user.Username = username
 		client.user.Password = password
+		client.user.isLoggedIn = true
+		activeUsers[username].isLoggedIn = true
 		fmt.Fprintf(client.writer, "Welcome, %s! You are now logged in.\n", username)
 		client.writer.Flush()
 		return true
@@ -143,10 +150,15 @@ func (c *Client) Logout() {
 		c.room.LeaveChatroom <- *c
 		c.room.Name = ""
 	}
+	mu.Lock()
+	activeUsers[c.user.Username].isLoggedIn = false
+	mu.Unlock()
 	c.user.Username = ""
 	c.user.Password = ""
+	c.user.isLoggedIn = false
 	//this is sort of redundant because it will just reset them on a new login but its good practice
 	c.LoggedOut = true
+
 	fmt.Println("Should be logging out")
 
 	return
