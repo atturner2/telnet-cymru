@@ -46,13 +46,13 @@ func (cr ChatRoom) start() {
 		case client := <-cr.Join:
 			fmt.Println("joining chatroom")
 			cr.clientsMux.Lock()
-			fmt.Println("here is the username being added: ", client.user.Username)
+			//fmt.Println("here is the username being added: ", client.user.Username)
 			cr.clients[client.user.Username] = client
-			fmt.Println("Here are all the clients: ", cr.clients)
-			fmt.Println("Here are all the users in the chatroom: ", cr.clients)
+			//fmt.Println("Here are all the clients: ", cr.clients)
+			//fmt.Println("Here are all the users in the chatroom: ", cr.clients)
 			cr.clientsMux.Unlock()
 		case client := <-cr.LeaveChatroom:
-			fmt.Println("leaving chatroom")
+			//fmt.Println("leaving chatroom")
 			cr.clientsMux.Lock()
 			delete(cr.clients, client.user.Username)
 			cr.clientsMux.Unlock()
@@ -65,7 +65,7 @@ func (cr ChatRoom) start() {
 			cr.clientsMux.RLock()
 			user, parsedMessage := extractMessage(message)
 			for username := range cr.clients {
-				fmt.Println("Sending a message to user: ", cr.clients[username])
+				//fmt.Println("Sending a message to user: ", cr.clients[username])
 				client := cr.clients[username]
 				if username != user {
 					fmt.Println("Sending a message to user: ", cr.clients[username])
@@ -105,7 +105,7 @@ func handleJoinRoom(client *Client) {
 		}
 
 		// Join the chat room
-		fmt.Println("Here is the client name that SHOULD be joining: ", client.user.Username)
+		//fmt.Println("Here is the client name that SHOULD be joining: ", client.user.Username)
 		chatRoom.Join <- *client
 		//set the chatroom name on the user
 		client.room = *chatRoom
@@ -141,7 +141,7 @@ func handleChatRoomInteraction(client *Client) {
 			//so other users can see whos'd sending what, and the message handler
 			//knows who sent what message so it can not send the message to the user that sent it
 			trimmedInput = client.user.Username + ": " + trimmedInput
-			fmt.Println("calling the message sending pipe")
+			//fmt.Println("calling the message sending pipe")
 
 			client.room.Messages <- trimmedInput // Leave the chat room
 

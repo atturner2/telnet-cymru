@@ -24,7 +24,6 @@ func createUser(username, password string) *User {
 		isLoggedIn: false,
 	}
 	activeUsers[username] = &user
-	fmt.Println("Here are all the active users: ", activeUsers)
 	return &user
 }
 

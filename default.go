@@ -105,7 +105,7 @@ func getDefaults() Config {
 
 func configurePort(config Config) Config {
 	if len(config.Port) > 0 && config.Port[0] == ':' {
-		fmt.Println("String has a colon as the first character")
+		fmt.Println("String has a colon as the first character as it should")
 	} else {
 		config.Port = ":" + config.Port
 		fmt.Println("WARNING: Port string in config file does not have a colon. It's been added but please verify formatting.")
