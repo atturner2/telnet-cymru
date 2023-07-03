@@ -209,7 +209,7 @@ func handleCreateChatRoom(client *Client) {
 }
 
 func handleWriteToLogFile(chatRoomName, message string) {
-	fileName := chatRoomName + ".log"
+	fileName := "logs/" + chatRoomName + ".log"
 	//this will open the log file if it already exists and create it if it doesnt
 	file, err := os.OpenFile(fileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {

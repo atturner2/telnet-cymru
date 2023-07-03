@@ -9,6 +9,8 @@ import (
 	"os"
 )
 
+// its much easier to create a single configuration object and return that then have a bunch
+// of functions grabbing strings from the same config file to pass around
 type Config struct {
 	ConnectionType string `json:"connectionType"`
 	Port           string `json:"port"`
@@ -95,8 +97,18 @@ func getDefaults() Config {
 	if err != nil {
 		log.Fatalf("Failed to parse JSON: %v", err)
 	}
-
+	config = configurePort(config)
 	// Access the configuration values
 	return config
 
+}
+
+func configurePort(config Config) Config {
+	if len(config.Port) > 0 && config.Port[0] == ':' {
+		fmt.Println("String has a colon as the first character")
+	} else {
+		config.Port = ":" + config.Port
+		fmt.Println("WARNING: Port string in config file does not have a colon. It's been added but please verify formatting.")
+	}
+	return config
 }

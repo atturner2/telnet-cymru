@@ -143,6 +143,9 @@ func (c *Client) Logout() {
 		c.room.LeaveChatroom <- *c
 		c.room.Name = ""
 	}
+	c.user.Username = ""
+	c.user.Password = ""
+	//this is sort of redundant because it will just reset them on a new login but its good practice
 	c.LoggedOut = true
 	fmt.Println("Should be logging out")
 
