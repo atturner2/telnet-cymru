@@ -1,0 +1,7 @@
+{
+    "connectionType": "tcp",
+    "port": "23",
+    "users": "config/users.csv",
+    "chatrooms": "config/chatrooms.csv",
+    "test": "test"
+}

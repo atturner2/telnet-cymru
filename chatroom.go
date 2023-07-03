@@ -41,6 +41,8 @@ func createChatRoom(roomName string) ChatRoom {
 func (cr ChatRoom) start() {
 	for {
 		select {
+		//I used amutex here but I'm notreally sure how necessary it is
+		//becuase there is only one goroutine for the chatroom
 		case client := <-cr.Join:
 			fmt.Println("joining chatroom")
 			cr.clientsMux.Lock()
@@ -107,7 +109,7 @@ func handleJoinRoom(client *Client) {
 		chatRoom.Join <- *client
 		//set the chatroom name on the user
 		client.room = *chatRoom
-		fmt.Fprintf(client.writer, "You have joined the chat room '%s'.\n", roomName)
+		fmt.Fprintf(client.writer, "You have joined the chat room '%s'.\n Press enter to send messages or 'exit' to leave the chatroom\n", roomName)
 		client.writer.Flush()
 		handleChatRoomInteraction(client)
 
@@ -207,7 +209,7 @@ func handleCreateChatRoom(client *Client) {
 }
 
 func handleWriteToLogFile(chatRoomName, message string) {
-	fileName := chatRoomName + ".log"
+	fileName := "logs/" + chatRoomName + ".log"
 	//this will open the log file if it already exists and create it if it doesnt
 	file, err := os.OpenFile(fileName, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {
