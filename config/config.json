@@ -1,11 +1,7 @@
 {
-  "server": {
-    "type": "tcp",
-    "address": 23
-  },
-  "filepaths": {
+    "connectionType": "tcp",
+    "port": "23",
     "users": "config/users.csv",
-    "chatrooms": "config/chatrooms.csv"
-  },
-  "test": "test"
+    "chatrooms": "config/chatrooms.csv",
+    "test": "test"
 }
